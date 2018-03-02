@@ -28,6 +28,17 @@ class MetricHandler:
         self.__logger = logging.getLogger('docker-monitor.metrics')
         self.__docker_client = docker.from_env(timeout=self.DOCKER_CLIENT_TIMEOUT)
 
+        # register URIs
+        # Gets metrics for all containers
+        @app.route('/docker-monitor/api/v1.0/metrics', methods=['GET'])
+        def get_metrics_for_all():
+            return jsonify(self.get_metrics())
+
+        # Gets metrics for an individual container
+        @app.route('/docker-monitor/api/v1.0/metrics/<string:container_name>', methods=['GET'])
+        def get_metrics_by_container_name(container_name):
+            return jsonify(self.get_metrics_by_container(container_name))
+
     def get_metrics_by_container(self, name):
         """Gets statistic metrics for a given container.
 
@@ -142,39 +153,3 @@ class MetricHandler:
             abort(500)
 
         return containers
-
-
-# Metric handler
-handler = MetricHandler()
-
-
-# REST API
-# Gets metrics for all containers
-@app.route('/docker-monitor/api/v1.0/metrics', methods=['GET'])
-def get_metrics():
-    return jsonify(handler.get_metrics())
-
-
-# Gets metrics for an individual container
-@app.route('/docker-monitor/api/v1.0/metrics/<string:container_name>', methods=['GET'])
-def get_metrics_by_container(container_name):
-    return jsonify(handler.get_metrics_by_container(container_name))
-
-
-# Not found
-@app.errorhandler(404)
-def resource_not_found(error):
-    return make_response(jsonify({'error': 'Resource not found'}), 404)
-
-
-# Request timeout
-@app.errorhandler(408)
-def resource_not_found(error):
-    return make_response(jsonify({'error': 'The server is overloaded. Try later.'}), 408)
-
-
-# Internal server error
-@app.errorhandler(500)
-def resource_not_found(error):
-    return make_response(jsonify({'error': 'The server encountered an internal '
-                                           'error and was unable to complete your request.'}), 500)
