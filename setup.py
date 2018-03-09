@@ -1,52 +1,28 @@
 # -*- coding: utf-8 -*-
-#https://packaging.python.org/tutorials/distributing-packages/
-import os
-
 #https://pythonhosted.org/versiontools/usage.html
-import setuptools
-
-from pip import download
-from pip import req
+from setuptools import setup, find_packages
 
 
-HERE = os.path.dirname(os.path.abspath(__file__))
-
-
-def get_requirements(file):
-    path = os.path.join(HERE, file)
-    deps = list()
-    for dep in req.parse_requirements(path, session=download.PipSession()):
-        try:
-            # Pip 8.1.2 Compatible
-            specs = ','.join(''.join(str(spec)) for spec in dep.req.specifier)
-        except AttributeError:
-            # Pip 1.5.4 Compatible
-            specs = ','.join(''.join(spec) for spec in dep.req.specs)
-        requirement = '{name}{extras}{specs}'.format(
-            name=dep.name,
-            extras=(
-                '[{extras}]'.format(extras=','.join(dep.extras))
-                if dep.extras else ''
-            ),
-            specs=specs,
-        )
-
-        deps.append(requirement)
-    return deps
-
-
-setuptools.setup(
+setup(
     name='dockermon',
     description='Dojot docker monitor.',
-    version=':versiontools:dockermon:',
+    version='0.0.1',
 
-    packages=setuptools.find_packages(exclude=['docs', 'tests']),
+    packages=find_packages(exclude=('docker',)),
     include_package_data=True,
-    install_requires=get_requirements('requirements.txt'),
-    setup_requires='versiontools',
-
+    install_requires=[
+        'flask==0.12',
+        'docker==2.7.0',
+        'requests==2.18.4',
+        'gunicorn==19.6.0',
+        'gevent==1.2.2',
+        'dojot-alarmlibrary'
+    ],
+    dependency_links=[
+        'git+git://github.com/dojot/alarm-client-python@master#egg=dojot-alarmlibrary'
+    ],
+    python_requires='>=3.6.0',
     author='Rafael Augusto Scaraficci',
     author_email='raugusto@cpqd.com.br',
-    url='dojot.com.br',
+    url='https://github.com/dojot/docker-monitor',
 )
-
