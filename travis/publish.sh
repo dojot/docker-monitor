@@ -4,8 +4,8 @@ version="latest"
 if [ $TRAVIS_BRANCH != "master" ] ; then
   version=$TRAVIS_BRANCH
 fi
-tag=$TRAVIS_REPO_SLUG:$version
+tag=dojot/docker-monitor:$version
 
 docker login -u="${DOCKER_USERNAME}" -p="${DOCKER_PASSWORD}"
-docker tag ${TRAVIS_REPO_SLUG} ${tag}
+docker tag dojot/docker-monitor ${tag}
 docker push $tag
