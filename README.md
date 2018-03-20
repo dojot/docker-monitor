@@ -3,10 +3,10 @@
 
 [![License badge](https://img.shields.io/badge/license-GPL-blue.svg)](https://opensource.org/licenses/GPL-3.0)
 
-It is a very simple service for monitoring docker containers.
+It is a very simple service for monitoring docker containers in dojot deployments.
 
-It provides a REST API to query for container's statistics and also generates alarms for some
-container's events.
+It provides a REST API to query for container statistics and also publishes alarms when
+problems happen.
 
 
 ## Dependencies
@@ -18,10 +18,11 @@ It depends on:
 - requests
 - gunicorn
 - gevent
+- [alarm-client-python](https://github.com/dojot/alarm-client-python)
 
 ## Usage
 
-The API for getting statistic metrics is defined in the table bellow. 
+The API for getting statistics is defined in the table bellow. 
 
 | Http Method   | URI                                                                 | Action                                |
 | ------------- |---------------------------------------------------------------------| --------------------------------------|
@@ -29,7 +30,7 @@ The API for getting statistic metrics is defined in the table bellow.
 | GET           | `http://<hostname>/docker-monitor/api/v1.0/metrics/<container-name>`| Retrieve metrics for a given container|
 
 
-In case of success, the GETs return statistic metrics, respectively, for all containers:
+In case of success, the GET `https://github.com/dojot/alarm-client-python` returns:
 ```json
 [
 {
@@ -47,9 +48,10 @@ In case of success, the GETs return statistic metrics, respectively, for all con
 
 }
 ]
-``` 
+```
  
-and for the requested container:
+and the GET `http://<hostname>/docker-monitor/api/v1.0/metrics/<container-name>` returns:
+
 ```json
 {
  "<container-name>": {"status": "<status>",
