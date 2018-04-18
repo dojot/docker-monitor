@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#https://pythonhosted.org/versiontools/usage.html
+# https://pythonhosted.org/versiontools/usage.html
 from setuptools import setup, find_packages
 
 

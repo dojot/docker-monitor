@@ -33,7 +33,7 @@ class AlarmHandler:
         # alarm client
         self.__alarm_client = RabbitMqClientConnection()
         try:
-            self.__logger.info("Connecting to %s:%s@%s:%s", user, password,host, port)
+            self.__logger.info("Connecting to %s:%s@%s:%s", user, password, host, port)
             self.__alarm_client.open(host, port, user, password)
         except AuthenticationError:
             self.__logger.error("Authentication error while connecting to RabbitMQ server. Exiting ...")

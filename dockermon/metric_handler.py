@@ -8,7 +8,7 @@ import logging
 import requests
 
 from dockermon.app import app
-from flask import jsonify, make_response, abort
+from flask import jsonify, abort
 from multiprocessing.pool import ThreadPool
 
 
