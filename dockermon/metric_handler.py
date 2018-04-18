@@ -60,18 +60,16 @@ class MetricHandler:
 
             if container.status == 'running':
                 data = container.stats(stream=False)
-                self.__logger.debug('container name: {0} statistics:{1}'.
-                                    format(container.name, data))
+                self.__logger.debug('container name: %s statistics: %s', container.name, data)
                 # cpu usage (percent)
                 metrics[container.name]['cpu'] = self.__calculate_cpu_percent(data)
 
                 # memory usage (percent)
                 metrics[container.name]['mem'] = self.__calculate_mem_percent(data)
 
-                self.__logger.debug('container name: {0} metrics:{1}'.
-                                    format(container.name, metrics))
+                self.__logger.debug('container name: %s metrics: %s'. container.name, metrics)
         except docker.errors.NotFound:
-            self.__logger.error('Container {0} not found.'.format(name))
+            self.__logger.error('Container %s not found.', name)
             abort(404)
         except requests.exceptions.ReadTimeout:
             self.__logger.error('Communication with docker timed out.')
