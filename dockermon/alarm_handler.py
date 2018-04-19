@@ -33,9 +33,9 @@ class AlarmHandler:
         # alarm client
         self.__alarm_client = RabbitMqClientConnection()
         try:
-            self.__logger.info("Connecting to {0}:{1}@{2}:{3}".format(user, password,host, port))
+            self.__logger.info("Connecting to %s:%s@%s:%s", user, password, host, port)
             self.__alarm_client.open(host, port, user, password)
-        except AuthenticationError as ex:
+        except AuthenticationError:
             self.__logger.error("Authentication error while connecting to RabbitMQ server. Exiting ...")
             raise SystemExit("Authentication error while connecting to RabbitMQ server.")
         except (ConnectionClosed, AlarmManagerException):
@@ -68,12 +68,12 @@ class AlarmHandler:
                     since = event['time'] + 1
                     alarm = self.__make_alarm(event)
                     if alarm is not None:
-                        self.__logger.info("Sending alarm: {0}".format(alarm.serialize()))
+                        self.__logger.info("Sending alarm: %s", alarm.serialize())
                         try:
                             self.__alarm_client.send(alarm)
                         except (InvalidAlarm, ValueError):
-                            self.__logger.error("Not well-formed alarm {0}. Discarding alarm ...".
-                                            format(alarm))
+                            self.__logger.error("Not well-formed alarm %s. Discarding ...",
+                                                alarm.serialize())
                         except ConnectionClosed:
                             self.__logger.error("Connection to RabbitMQ server was closed. Exiting ...")
                             raise SystemExit("Connection to RabbitMQ server was closed.")
@@ -88,7 +88,7 @@ class AlarmHandler:
             image_sha256 = image.id
 
         except docker.errors.ImageNotFound:
-            self.__logger.error('Image {0} not found.'.format(name))
+            self.__logger.error('Image %s not found.', name)
             image_sha256 = 'Unknown'
         except requests.exceptions.ReadTimeout:
             self.__logger.error('Communication with docker timed out.')
@@ -101,7 +101,7 @@ class AlarmHandler:
 
     def __make_alarm(self, event):
         """Makes an alarm to send to dojot Alarm Manager"""
-        self.__logger.debug("Making alarm from event {0}".format(event))
+        self.__logger.debug("Making alarm from event %s", event)
 
         alarm = None
         if event['Action'] == 'die' \
@@ -165,7 +165,7 @@ class AlarmHandler:
 
     def __align_alarms(self, since, until):
         """Sends the last alarms that happened in the time window (since, until) """
-        self.__logger.info("Aligning alarms since {0} until {1}".format(since, until))
+        self.__logger.info("Aligning alarms since %s until %s", since, until)
 
         # keep the last alarm for each container
         alarms = {}
@@ -183,12 +183,11 @@ class AlarmHandler:
         # send the last alarms
         for container in alarms:
             alarm = alarms[container]
-            self.__logger.info("Sending alarm: {0}".format(alarm.serialize()))
+            self.__logger.info("Sending alarm: %s", alarm.serialize())
             try:
                 self.__alarm_client.send(alarm)
             except (InvalidAlarm, ValueError):
-                self.__logger.error("Not well-formed alarm {0}. Discarding alarm ...".
-                                    format(alarm))
+                self.__logger.error("Not well-formed alarm %s. Discarding ...", alarm.serialize())
             except ConnectionClosed:
                 self.__logger.error("Connection to RabbitMQ server was closed. Exiting ...")
                 raise SystemExit("Connection to RabbitMQ server was closed.")

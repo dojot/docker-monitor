@@ -1,5 +1,5 @@
 #!/bin/bash
-if [ $1 = 'start' ]; then
+if [ "$1" = 'start' ]; then
     flag=0
     retries=0
     max_retries=5
@@ -21,7 +21,7 @@ if [ $1 = 'start' ]; then
         else
             echo "Cannot start application, retying in $sleep_time seconds..."
             sleep $sleep_time
-            let retries++
+            ((retries++))
         fi
     done
 fi
